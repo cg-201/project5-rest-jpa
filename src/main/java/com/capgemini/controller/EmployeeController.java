@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capgemini.entities.Department;
 import com.capgemini.entities.Employee;
+import com.capgemini.repository.DepartmentRepository;
 import com.capgemini.repository.EmployeeRepository;
 
 // http://localhost:8080/api/employee
@@ -23,6 +25,9 @@ public class EmployeeController {
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
+	
+	@Autowired
+	private DepartmentRepository deparmeentRepository;
 
 	// http://localhost:8080/api/employee/
 	@GetMapping("/")
@@ -40,7 +45,14 @@ public class EmployeeController {
 	// http://localhost:8080/api/employee/
 	@PostMapping("/")
 	public String createEmployee(@RequestBody Employee employee) {
-
+		
+		// many to one
+		if(employee.getDepartment() != null) {
+			Department dbDpartment = deparmeentRepository.findById(employee.getDepartment().getId()).get();
+			employee.setDepartment(dbDpartment);
+		}
+		
+		
 		employeeRepository.save(employee);
 		return "Employee Created!";
 	}
